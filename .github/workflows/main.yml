@@ -19,6 +19,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
+      
+      - name: Setup authentication for GitHub Packages
+        run: |
+          echo "<settings><servers><server><id>github</id><username>${{ github.actor }}</username><password>${{ secrets.GITHUB_TOKEN }}</password></server></servers></settings>" > ~/.m2/settings.xml
 
       - name: Build EAR with Maven
         run: mvn clean package -DskipTests --file='bwceTestApp.parent/pom.xml'
