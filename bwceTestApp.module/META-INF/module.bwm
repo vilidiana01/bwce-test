@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sca:composite xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:BW="http://xsd.tns.tibco.com/amf/models/sca/implementationtype/BW" xmlns:XMLSchema="http://www.w3.org/2001/XMLSchema" xmlns:compositeext="http://schemas.tibco.com/amx/3.0/compositeext" xmlns:sca="http://www.osoa.org/xmlns/sca/1.0" xmlns:scaext="http://xsd.tns.tibco.com/amf/models/sca/extensions" xmi:id="_RUPx0PKeEe-wMOkUHe94pg" targetNamespace="http://tns.tibco.com/bw/composite/bwceTestApp.module" name="bwceTestApp.module" compositeext:version="1.0.0" compositeext:formatVersion="2">
+  <sca:property xmi:id="_SdMW4PKeEe-wMOkUHe94pg" name="BW.DEPLOYMENTUNIT.TYPE" type="XMLSchema:string" scalable="true"/>
+  <sca:property xmi:id="_SdcOgPKeEe-wMOkUHe94pg" name="BW.APPNODE.NAME" type="XMLSchema:string" scalable="true"/>
+  <sca:property xmi:id="_Sdi8MPKeEe-wMOkUHe94pg" name="BW.DEPLOYMENTUNIT.NAME" type="XMLSchema:string" scalable="true"/>
+  <sca:property xmi:id="_Sdpp4PKeEe-wMOkUHe94pg" name="BW.HOST.NAME" type="XMLSchema:string" scalable="true"/>
+  <sca:property xmi:id="_SduiYPKeEe-wMOkUHe94pg" name="BW.DOMAIN.NAME" type="XMLSchema:string" scalable="true"/>
+  <sca:property xmi:id="_Sdza4PKeEe-wMOkUHe94pg" name="BW.DEPLOYMENTUNIT.VERSION" type="XMLSchema:string" scalable="true"/>
+  <sca:property xmi:id="_Sd4TYPKeEe-wMOkUHe94pg" name="BW.APPSPACE.NAME" type="XMLSchema:string" scalable="true"/>
+  <sca:property xmi:id="_Sd9L4PKeEe-wMOkUHe94pg" name="BW.MODULE.VERSION" type="XMLSchema:string" scalable="true"/>
+  <sca:property xmi:id="_SeCrcPKeEe-wMOkUHe94pg" name="BW.CLOUD.PORT" type="XMLSchema:int" scalable="true"/>
+  <sca:property xmi:id="_SeJZIPKeEe-wMOkUHe94pg" name="BW.MODULE.NAME" type="XMLSchema:string" scalable="true"/>
+  <sca:property xmi:id="_qav8MPKeEe-wMOkUHe94pg" name="timerSec" type="XMLSchema:int" scaext:simpleValue="0" publicAccess="true" scalable="true"/>
+  <sca:property xmi:id="_AjEeMPKfEe-wMOkUHe94pg" name="msgLog" type="XMLSchema:string" publicAccess="true" scalable="true"/>
+  <sca:component xmi:id="_R34DUPKeEe-wMOkUHe94pg" name="ComponentProcess" compositeext:version="1.0.0.qualifier">
+    <scaext:implementation xsi:type="BW:BWComponentImplementation" xmi:id="_R35RcPKeEe-wMOkUHe94pg" processName="bwcetestapp.module.Process"/>
+  </sca:component>
+</sca:composite>
