@@ -1,4 +1,4 @@
-name: Build BWCE EAR and Push Docker Image to Docker Hub
+name: Build BWCE EAR, Push Docker Image to Docker Hub and Deploy to Kubernetes
 
 on:
   push:
@@ -11,33 +11,48 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout of repository
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      # Set up Java (it is necessary for the Maven Build)
       - name: Set up JDK 11 (TIBCO BWCE supporta JDK 8/11)
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '11'
       
+      # Setup maven authentication
       - name: Setup authentication for GitHub Packages
         run: |
           echo "<settings><servers><server><id>github</id><username>${{ github.actor }}</username><password>${{ secrets.GITHUB_TOKEN }}</password></server></servers></settings>" > ~/.m2/settings.xml
 
+      # Build EAR with Maven
       - name: Build EAR with Maven
         run: mvn clean package -DskipTests --file='bwceTestApp.parent/pom.xml'
 
+      # Verify that the EAR is created
       - name: Verify EAR File
         run: ls -l /home/runner/work/bwce-test/bwce-test/bwceTestApp/target/*.ear
         
+      # Login to Docker Hub
       - name: Log in to Docker Hub
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password "${{ secrets.DOCKER_PASSWORD }}"
 
+      # Build the docker image
       - name: Build Docker Image
         run: |
           docker build -t "${{ secrets.DOCKER_USERNAME }}/images:bwce-test-github-${{ github.run_number }}" .
 
+      # Push the docker image to the registry with an incremental run number
       - name: Push Docker Image to Docker Hub
         run: |
           docker push "${{ secrets.DOCKER_USERNAME }}/images:bwce-test-github-${{ github.run_number }}"
+
+      # Download the Helm Chart Repository
+      - name: Download Helm Chart
+        run: |
+          curl -o bwce-0.1.tgz https://github.com/vilidiana01/bwce-helm/releases/download/bwce/bwce-0.1.tgz
+          mkdir bwce-0.1 && tar -xzf bwce-0.1.tgz -C bwce
+          ls -l bwce-0.1
