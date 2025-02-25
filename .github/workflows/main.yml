@@ -1,0 +1,39 @@
+name: Build BWCE EAR and Push Docker Image to Docker Hub
+
+on:
+  push:
+    branches:
+      - main  # Modifica se vuoi eseguire la pipeline su un altro branch
+
+jobs:
+  build-and-push:
+    name: Build BWCE EAR and Push Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 11 (TIBCO BWCE supporta JDK 8/11)
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Build EAR with Maven
+        run: mvn clean package -DskipTests
+
+      - name: Verify EAR File
+        run: ls -l target/*.ear
+        
+      - name: Log in to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build Docker Image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/images:bwce-test-github-1.0 .
+
+      - name: Push Docker Image to Docker Hub
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/images:bwce-test-github-1.0
