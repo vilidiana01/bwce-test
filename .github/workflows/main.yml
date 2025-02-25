@@ -28,7 +28,7 @@ jobs:
         run: mvn clean package -DskipTests --file='bwceTestApp.parent/pom.xml'
 
       - name: Verify EAR File
-        run: ls -l target/*.ear
+        run: ls -l /home/runner/work/bwce-test/bwce-test/bwceTestApp/target/*.ear
         
       - name: Log in to Docker Hub
         run: |
