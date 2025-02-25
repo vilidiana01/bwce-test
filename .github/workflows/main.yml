@@ -40,4 +40,4 @@ jobs:
 
       - name: Push Docker Image to Docker Hub
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/images:bwce-test-github-1.0
+          docker push "${{ secrets.DOCKER_USERNAME }}/images:bwce-test-github-${{ github.run_number }}"
