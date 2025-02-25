@@ -1,8 +1,8 @@
-Manifest-Version: 1.0.0.202502250958
+Manifest-Version: 1.0.0.202502251028
 Bundle-ManifestVersion: 2
 Bundle-Name: BwceTestApp Module
 Bundle-SymbolicName: bwceTestApp.module
-Bundle-Version: 1.0.0.202502250958
+Bundle-Version: 1.0.0.202502251028
 Bundle-Vendor: TIBCO Software Inc.
 TIBCO-BW-ApplicationModule: META-INF/module.bwm
 TIBCO-BW-ConfigProfile: META-INF/default.substvar
