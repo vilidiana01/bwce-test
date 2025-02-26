@@ -23,14 +23,16 @@ jobs:
           java-version: '11'
       
       # Setup maven authentication
-      - name: Setup authentication for GitHub Packages
-        run: |
-          echo "<settings><servers><server><id>github</id><username>${{ github.actor }}</username><password>${{ secrets.GITHUB_TOKEN }}</password></server></servers></settings>" > ~/.m2/settings.xml
+      #- name: Setup authentication for GitHub Packages
+      #  run: |
+      #    echo "<settings><servers><server><id>github</id><username>${{ github.actor }}</username><password>${{ secrets.GITHUB_TOKEN }}</password></server></servers></settings>" > ~/.m2/settings.xml
 
       # Build EAR with Maven
       - name: Build EAR with Maven
-        run: mvn clean package -DskipTests --file='bwceTestApp.parent/pom.xml'
-
+        run: POM_FILE_LOCATION=`find . -path "*.parent/pom.xml"`; mvn clean package -DskipTests -f ${POM_FILE_LOCATION};
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      
       # Verify that the EAR is created
       - name: Verify EAR File
         run: ls -l /home/runner/work/bwce-test/bwce-test/bwceTestApp/target/*.ear
