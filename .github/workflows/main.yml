@@ -1,14 +1,8 @@
 name: Build BWCE EAR, Push Docker Image to Docker Hub and Deploy to Kubernetes
 
 env:
-  #  AZURE_CONTAINER_REGISTRY: MY_REGISTRY_NAME # set this to the name of your container registry
-  #PROJECT_NAME: MY_PROJECT_NAME              # set this to your project's name
-  #RESOURCE_GROUP: MY_RESOURCE_GROUP          # set this to the resource group containing your AKS cluster
-  #CLUSTER_NAME: MY_CLUSTER_NAME              # set this to the name of your AKS cluster
-  #REGISTRY_URL: MY_REGISTRY_URL              # set this to the URL of your registry
-  # If you bake using helm:
-  CHART_PATH: https://github.com/maintilla/github-wf-test/releases/download/bwce/bwce-0.1.tar                   # set this to the path to your helm file
-  CHART_OVERRIDE_PATH: https://github.com/vilidiana01/bwce-test/blob/main/values.yaml     # set this to an array of override file paths
+  CHART_PATH: https://github.com/maintilla/github-wf-test/releases/download/bwce/bwce-0.1.tar
+  CHART_OVERRIDE_PATH: https://github.com/vilidiana01/bwce-test/blob/main/values.yaml
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 on:
@@ -22,96 +16,88 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout of repository
+      # Checkout repository
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Set up Java (it is necessary for the Maven Build)
+      # Set up Java 11 for Maven build
       - name: Set up JDK 11 (TIBCO BWCE supporta JDK 8/11)
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '11'
-      
-      # Setup maven authentication
-      #- name: Setup authentication for GitHub Packages
-      #  run: |
-      #    echo "<settings><servers><server><id>github</id><username>${{ github.actor }}</username><password>${{ secrets.GITHUB_TOKEN }}</password></server></servers></settings>" > ~/.m2/settings.xml
 
       # Build EAR with Maven
       - name: Build EAR with Maven
-        run: POM_FILE_LOCATION=`find . -path "*.parent/pom.xml"`; mvn clean package -DskipTests -f ${POM_FILE_LOCATION};
+        run: |
+          POM_FILE_LOCATION=$(find . -path "*.parent/pom.xml")
+          mvn clean package -DskipTests -f "$POM_FILE_LOCATION"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_ACTOR: ${{ secrets.ACTOR }}
-      
-      # Verify that the EAR is created
+          GITHUB_ACTOR: ${{ github.actor }}
+
+      # Verify that the EAR file is created before proceeding
       - name: Verify EAR File
-        run: ls -l /home/runner/work/bwce-test/bwce-test/bwceTestApp/target/*.ear
-        
-      # Login to Docker Hub
+        run: |
+          EAR_FILE=$(find /home/runner/work/bwce-test/bwce-test/bwceTestApp/target -name "*.ear" -print -quit)
+          if [[ -z "$EAR_FILE" ]]; then
+            echo "EAR file not found! Build failed."
+            exit 1
+          fi
+          ls -l "$EAR_FILE"
+
+      # Log in to Docker Hub
       - name: Log in to Docker Hub
-        run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password "${{ secrets.DOCKER_PASSWORD }}"
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      # Build the docker image
+      # Build Docker Image
       - name: Build Docker Image
-        run: |
-          docker build -t "${{ secrets.DOCKER_USERNAME }}/images:bwce-test-github-${{ github.run_number }}" .
+        run: docker build -t "${{ secrets.DOCKER_USERNAME }}/images:bwce-test-github-${{ github.run_number }}" .
 
-      # Push the docker image to the registry with an incremental run number
+      # Push Docker Image to Docker Hub
       - name: Push Docker Image to Docker Hub
-        run: |
-          docker push "${{ secrets.DOCKER_USERNAME }}/images:bwce-test-github-${{ github.run_number }}"
-      
-      - name: Install Helm 3.10.0
-        run: |
-          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-          helm version
+        run: docker push "${{ secrets.DOCKER_USERNAME }}/images:bwce-test-github-${{ github.run_number }}"
 
-      - name: Set Helm Version Manually
-        run: |
-          export PATH="/usr/local/bin:$PATH"
-          helm version
-
-      - name: Verify Helm Chart URL
-        run: |
-          wget --spider https://github.com/maintilla/github-wf-test/releases/download/bwce/bwce-0.1.tar
-          wget --spider https://github.com/vilidiana01/bwce-test/blob/main/values.yaml
-
-      - name: Download Helm Chart
-        run: |
-          wget -O bwce-0.1.tar "https://github.com/maintilla/github-wf-test/releases/download/bwce/bwce-0.1.tar"
-
-      - name: Extract Helm Chart
-        run: |
-          mkdir -p bwce-0.1
-          tar -xvf bwce-0.1.tar -C bwce-0.1
-          ls -l bwce-0.1
-
-      - name: Run Helm Dependency Update
-        run: |
-          helm dependency build bwce-0.1
-          helm dependency update bwce-0.1
-
-      - name: Install Helm Manually
+      # Install Helm (Stable Version)
+      - name: Install Helm v3.14.2
         run: |
           curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
           chmod +x get_helm.sh
           ./get_helm.sh --version v3.14.2
           helm version
 
+      # Verify Helm Chart URL before downloading
+      - name: Verify Helm Chart URL
+        run: |
+          wget --spider "${{ env.CHART_PATH }}"
+          wget --spider "${{ env.CHART_OVERRIDE_PATH }}"
+
+      # Download and Extract Helm Chart
+      - name: Download and Extract Helm Chart
+        run: |
+          wget -O bwce-0.1.tar "${{ env.CHART_PATH }}"
+          mkdir -p bwce-0.1
+          tar -xvf bwce-0.1.tar -C bwce-0.1
+          ls -l bwce-0.1
+
+      # Run Helm Dependency Update
+      - name: Run Helm Dependency Update
+        run: |
+          helm dependency build bwce-0.1
+          helm dependency update bwce-0.1
+
+      # Run Azure Bake Action (Using Extracted Helm Chart)
       - name: Run Azure Bake Action
         uses: azure/k8s-bake@v1
         with:
           renderEngine: helm
-          helmChart: https://github.com/maintilla/github-wf-test/releases/download/bwce/bwce-0.1.tar
-          overrideFiles: https://github.com/vilidiana01/bwce-test/blob/main/values.yaml
+          helmChart: ./bwce-0.1  # Use extracted folder instead of .tar
+          overrideFiles: "${{ env.CHART_OVERRIDE_PATH }}"
           overrides: replicas:2
           helm-version: 3.14.2
         env:
-          CHART_PATH: https://github.com/maintilla/github-wf-test/releases/download/bwce/bwce-0.1.tar
-          CHART_OVERRIDE_PATH: https://github.com/vilidiana01/bwce-test/blob/main/values.yaml
+          CHART_PATH: ${{ env.CHART_PATH }}
+          CHART_OVERRIDE_PATH: ${{ env.CHART_OVERRIDE_PATH }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.26-4/x64
           JAVA_HOME_11_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.26-4/x64
