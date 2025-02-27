@@ -80,13 +80,13 @@ jobs:
       #    wget --spider "${{ env.CHART_OVERRIDE_PATH }}"
       #
       # Download and Extract Helm Chart
-      #- name: Download and Extract Helm Chart
-      #  run: |
-      #    wget -O bwce-0.1.tar "${{ env.CHART_PATH }}"
-      #    mkdir -p bwce-0.1
-      #    tar -xvf bwce-0.1.tar -C bwce-0.1
-      #    ls -l bwce-0.1
-      #
+      - name: Download and Extract Helm Chart
+        run: |
+          wget -O bwce-0.1.tar "${{ env.CHART_PATH }}"
+          mkdir -p bwce-0.1
+          tar -xvf bwce-0.1.tar -C bwce-0.1
+          ls -l bwce-0.1
+      
       # Run Helm Dependency Update
       - name: Run Helm Dependency Update
         run: |
