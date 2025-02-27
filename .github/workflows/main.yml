@@ -1,5 +1,15 @@
 name: Build BWCE EAR, Push Docker Image to Docker Hub and Deploy to Kubernetes
 
+env:
+  #  AZURE_CONTAINER_REGISTRY: MY_REGISTRY_NAME # set this to the name of your container registry
+  #PROJECT_NAME: MY_PROJECT_NAME              # set this to your project's name
+  #RESOURCE_GROUP: MY_RESOURCE_GROUP          # set this to the resource group containing your AKS cluster
+  #CLUSTER_NAME: MY_CLUSTER_NAME              # set this to the name of your AKS cluster
+  #REGISTRY_URL: MY_REGISTRY_URL              # set this to the URL of your registry
+  # If you bake using helm:
+  CHART_PATH: https://github.com/vilidiana01/bwce-helm/releases/download/bwce/bwce-0.1.tar                   # set this to the path to your helm file
+  CHART_OVERRIDE_PATH: https://github.com/vilidiana01/bwce-test/blob/main/values.yaml     # set this to an array of override file paths
+
 on:
   push:
     branches:
@@ -54,8 +64,14 @@ jobs:
           docker push "${{ secrets.DOCKER_USERNAME }}/images:bwce-test-github-${{ github.run_number }}"
 
       # Download the Helm Chart Repository
-      - name: Download Helm Chart
-        run: |
-          curl -o bwce-0.1.tar https://github.com/vilidiana01/bwce-helm/releases/download/bwce/bwce-0.1.tar
-          mkdir bwce-0.1 && tar -xvf bwce-0.1.tar -C bwce-0.1
-          ls -l bwce-0.1
+      - name: Configure deployment
+        uses: azure/k8s-bake@61041e8c2f75c1f01186c8f05fb8b24e1fc507d8
+        with:
+          renderEngine: 'helm'
+          helmChart: ${{ env.CHART_PATH }}
+          overrideFiles: ${{ env.CHART_OVERRIDE_PATH }}
+          overrides: |
+            replicas:2
+          helm-version: 'latest'
+        id: bake
+
