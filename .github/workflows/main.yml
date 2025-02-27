@@ -63,6 +63,10 @@ jobs:
       - name: Push Docker Image to Docker Hub
         run: |
           docker push "${{ secrets.DOCKER_USERNAME }}/images:bwce-test-github-${{ github.run_number }}"
+      
+      # Setup helm version
+      - name: Set Helm Version
+        run: echo "HELM_VERSION=3.10.0" >> $GITHUB_ENV
 
       # Download the Helm Chart Repository
       - name: Configure deployment
