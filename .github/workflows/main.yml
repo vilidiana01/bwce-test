@@ -9,6 +9,7 @@ env:
   # If you bake using helm:
   CHART_PATH: https://github.com/vilidiana01/bwce-helm/releases/download/bwce/bwce-0.1.tar                   # set this to the path to your helm file
   CHART_OVERRIDE_PATH: https://github.com/vilidiana01/bwce-test/blob/main/values.yaml     # set this to an array of override file paths
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 on:
   push:
