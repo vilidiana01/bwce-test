@@ -66,6 +66,13 @@ jobs:
           ./get_helm.sh --version v3.14.2
           helm version
 
+      - name: Add Helm to PATH
+        run: |
+          echo "$(which helm)"
+          echo "Adding Helm to PATH..."
+          export PATH=$PATH:/usr/local/bin
+          helm version
+
       # Verify Helm Chart URL before downloading
       - name: Verify Helm Chart URL
         run: |
@@ -94,7 +101,7 @@ jobs:
           helmChart: ./bwce-0.1  # Use extracted folder instead of .tar
           overrideFiles: "${{ env.CHART_OVERRIDE_PATH }}"
           overrides: replicas:2
-          helm-version: 3.14.2
+          helm-version: latest
         env:
           CHART_PATH: ${{ env.CHART_PATH }}
           CHART_OVERRIDE_PATH: ${{ env.CHART_OVERRIDE_PATH }}
