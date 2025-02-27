@@ -101,6 +101,7 @@ jobs:
           helmChart: https://github.com/maintilla/github-wf-test/releases/download/bwce/bwce-0.1.tar
           overrideFiles: https://github.com/vilidiana01/bwce-test/blob/main/values.yaml
           overrides: replicas:2
+          helm-version: 3.10.0
         env:
           CHART_PATH: https://github.com/maintilla/github-wf-test/releases/download/bwce/bwce-0.1.tar
           CHART_OVERRIDE_PATH: https://github.com/vilidiana01/bwce-test/blob/main/values.yaml
