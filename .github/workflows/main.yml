@@ -65,7 +65,7 @@ jobs:
 
       # Download the Helm Chart Repository
       - name: Configure deployment
-        uses: azure/k8s-bake@61041e8c2f75c1f01186c8f05fb8b24e1fc507d8
+        uses: azure/k8s-bake@v1
         with:
           renderEngine: 'helm'
           helmChart: ${{ env.CHART_PATH }}
