@@ -64,19 +64,36 @@ jobs:
         run: |
           docker push "${{ secrets.DOCKER_USERNAME }}/images:bwce-test-github-${{ github.run_number }}"
       
-      # Setup helm version
-      - name: Set Helm Version
-        run: echo "HELM_VERSION=3.10.0" >> $GITHUB_ENV
+      - name: Install Helm 3.10.0
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+          helm version
 
-      # Download the Helm Chart Repository
-      - name: Configure deployment
+      - name: Set Helm Version Manually
+        run: |
+          export PATH="/usr/local/bin:$PATH"
+          helm version
+
+      - name: Verify Helm Chart URL
+        run: |
+          wget --spider https://github.com/vilidiana01/bwce-helm/releases/download/bwce/bwce-0.1.tar
+          wget --spider https://github.com/vilidiana01/bwce-test/blob/main/values.yaml
+
+      - name: Run Helm Dependency Update
+        run: |
+          helm dependency build bwce-0.1
+          helm dependency update bwce-0.1
+
+      - name: Run Azure Bake Action
         uses: azure/k8s-bake@v1
         with:
-          renderEngine: 'helm'
-          helmChart: ${{ env.CHART_PATH }}
-          overrideFiles: ${{ env.CHART_OVERRIDE_PATH }}
-          overrides: |
-            replicas:2
-          helm-version: 'latest'
-        id: bake
-
+          renderEngine: helm
+          helmChart: https://github.com/vilidiana01/bwce-helm/releases/download/bwce/bwce-0.1.tar
+          overrideFiles: https://github.com/vilidiana01/bwce-test/blob/main/values.yaml
+          overrides: replicas:2
+        env:
+          CHART_PATH: https://github.com/vilidiana01/bwce-helm/releases/download/bwce/bwce-0.1.tar
+          CHART_OVERRIDE_PATH: https://github.com/vilidiana01/bwce-test/blob/main/values.yaml
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.26-4/x64
+          JAVA_HOME_11_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.26-4/x64
