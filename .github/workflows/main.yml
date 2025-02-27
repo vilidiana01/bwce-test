@@ -99,7 +99,7 @@ jobs:
         with:
           renderEngine: helm
           helmChart: ./bwce-0.1  # Use extracted folder instead of .tar
-          overrideFiles: "${{ env.CHART_OVERRIDE_PATH }}"
+          #          overrideFiles: "${{ env.CHART_OVERRIDE_PATH }}"
           overrides: replicas:2
           helm-version: ''
         env:
