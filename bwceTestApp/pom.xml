@@ -12,10 +12,10 @@
   <packaging>bwear</packaging>
   <properties>
     <project.type>None</project.type>
-    <bw.Home>/bwce/2.9</bw.Home>
+    <!--<bw.Home>/bwce/2.9</bw.Home>-->
     <skipTests>false</skipTests>
     <failIfNoTests>false</failIfNoTests>
-    <tibco.Home>/opt/tibco/bwce291</tibco.Home>
+    <!--<tibco.Home>/opt/tibco/bwce291</tibco.Home>-->
   </properties>
   <build>
     <plugins>
