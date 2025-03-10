@@ -4,6 +4,7 @@ env:
   CHART_PATH: https://github.com/maintilla/github-wf-test/releases/download/bwce/bwce-0.1.tar
   CHART_OVERRIDE_PATH: https://github.com/vilidiana01/bwce-test/blob/main/values.yaml
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GH_PACKAGES_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
 
 on:
   push:
@@ -37,7 +38,7 @@ jobs:
               <server>
                 <id>github</id>
                 <username>${{ github.actor }}</username>
-                <password>${{ secrets.GITHUB_TOKEN }}</password>
+                <password>${{ secrets.GH_PACKAGES_TOKEN }}</password>
               </server>
             </servers>
           </settings>
