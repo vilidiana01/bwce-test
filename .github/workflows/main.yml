@@ -35,6 +35,7 @@ jobs:
       - name: Clear Maven Cache
         run: rm -rf ~/.m2/repository
 
+
       # Maven authenticate
       - name: Configure Maven settings.xml
         run: |
