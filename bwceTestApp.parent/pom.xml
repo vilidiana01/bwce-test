@@ -27,7 +27,7 @@
   </distributionManagement>
   <dependencies>
     <dependency>
-      <groupId>com.tibco</groupId>
+      <groupId>com.tibco.plugins</groupId>
       <artifactId>com.tibco.bw.palette.shared</artifactId>
       <version>6.2.1901</version>
     </dependency>
