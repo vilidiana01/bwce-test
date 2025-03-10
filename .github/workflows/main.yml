@@ -3,8 +3,7 @@ name: Build BWCE EAR, Push Docker Image to Docker Hub and Deploy to Kubernetes
 env:
   CHART_PATH: https://github.com/maintilla/github-wf-test/releases/download/bwce/bwce-0.1.tar
   CHART_OVERRIDE_PATH: https://github.com/vilidiana01/bwce-test/blob/main/values.yaml
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  GH_PACKAGES_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
 
 on:
   push:
@@ -50,7 +49,7 @@ jobs:
           POM_FILE_LOCATION=$(find . -path "*.parent/pom.xml")
           mvn clean test -f "$POM_FILE_LOCATION"
         env:
-          GH_PACKAGES_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
 
       # Code Quality Checks with SonarQube plugin using Maven
@@ -68,7 +67,7 @@ jobs:
           POM_FILE_LOCATION=$(find . -path "*.parent/pom.xml")
           mvn clean package deploy -DskipTests -f "$POM_FILE_LOCATION"
         env:
-          GH_PACKAGES_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
 
       # Verify that the EAR file is created before proceeding
