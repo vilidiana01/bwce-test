@@ -3,7 +3,7 @@ name: Build BWCE EAR, Push Docker Image to Docker Hub and Deploy to Kubernetes
 env:
   CHART_PATH: https://github.com/maintilla/github-wf-test/releases/download/bwce/bwce-0.1.tar
   CHART_OVERRIDE_PATH: https://github.com/vilidiana01/bwce-test/blob/main/values.yaml
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
 on:
   push:
@@ -45,7 +45,7 @@ jobs:
               <server>
                 <id>github</id>
                 <username>vilidiana01</username>
-                <password>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</password>
+                <password>${{ secrets.GH_TOKEN }}</password>
               </server>
             </servers>
           </settings>
@@ -59,9 +59,9 @@ jobs:
       - name: Perform Unit tests
         run: |
           POM_FILE_LOCATION=$(find . -path "*.parent/pom.xml")
-          # mvn clean test -f "$POM_FILE_LOCATION"
+          mvn clean test -f "$POM_FILE_LOCATION"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
 
       # Code Quality Checks with SonarQube plugin using Maven
@@ -70,7 +70,7 @@ jobs:
       #    POM_FILE_LOCATION=$(find . -path "*.parent/pom.xml")
       #    mvn clean sonar:sonar -DskipTests -f "$POM_FILE_LOCATION"
       #  env:
-      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #    GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       #    GITHUB_ACTOR: ${{ github.actor }}
       
       # Build EAR with Maven
@@ -79,7 +79,7 @@ jobs:
           POM_FILE_LOCATION=$(find . -path "*.parent/pom.xml")
           mvn clean package deploy -DskipTests -X -e -f "$POM_FILE_LOCATION"
         env:
-          GITHUB_TOKEN: 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
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           GITHUB_ACTOR: vilidiana01
 
       # Verify that the EAR file is created before proceeding
@@ -151,6 +151,6 @@ jobs:
         env:
           CHART_PATH: ${{ env.CHART_PATH }}
           CHART_OVERRIDE_PATH: ${{ env.CHART_OVERRIDE_PATH }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.26-4/x64
           JAVA_HOME_11_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.26-4/x64
