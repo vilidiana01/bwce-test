@@ -79,7 +79,15 @@ jobs:
       #  env:
       #    GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       #    GITHUB_ACTOR: ${{ github.actor }}
-      
+
+      # Check token length
+      - name: Debug GitHub Token
+        run: echo "Token Length ${#secrets.GH_TOKEN}"
+
+      # Check Maven Effective Settings
+      - name: Check Maven Effective Settings
+        run: mvn help:effective-settings
+
       # Build EAR with Maven
       - name: Build EAR with Maven
         run: |
