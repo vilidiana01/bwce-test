@@ -82,7 +82,14 @@ jobs:
 
       # Check token length
       - name: Debug GitHub Token
-        run: echo "Token Length ${#secrets.GH_TOKEN}"
+        run: |
+          if [ -z "${{ secrets.GH_TOKEN }}" ]; then
+            echo "GH_TOKEN is empty or not set"
+            exit 1
+          else
+            echo "GH_TOKEN is set"
+          fi
+      
 
       # Check Maven Effective Settings
       - name: Check Maven Effective Settings
