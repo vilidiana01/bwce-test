@@ -44,12 +44,18 @@ jobs:
             <servers>
               <server>
                 <id>github</id>
-                <username>vilidiana01</username>
+                <username>${{ github.actor }}</username>
+                <password>${{ secrets.GH_TOKEN }}</password>
+              </server>
+              <server>
+                <id>project-dependencies</id>
+                <username>${{ github.actor }}</username>
                 <password>${{ secrets.GH_TOKEN }}</password>
               </server>
             </servers>
           </settings>
           EOF
+
           
       # Check used token
       - name: Debug Maven settings.xml
