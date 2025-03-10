@@ -42,7 +42,11 @@ jobs:
             </servers>
           </settings>
           EOF
-
+          
+      # Check used token
+      - name: Debug Maven settings.xml
+        run: cat ~/.m2/settings.xml
+  
       # Unit Tests with Maven
       - name: Perform Unit tests
         run: |
@@ -65,7 +69,7 @@ jobs:
       - name: Build EAR with Maven
         run: |
           POM_FILE_LOCATION=$(find . -path "*.parent/pom.xml")
-          mvn clean package deploy -DskipTests -f "$POM_FILE_LOCATION"
+          mvn clean package deploy -DskipTests -X -f "$POM_FILE_LOCATION"
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
