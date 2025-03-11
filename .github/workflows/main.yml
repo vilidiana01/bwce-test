@@ -88,8 +88,7 @@ jobs:
             exit 1
           else
             echo "GH_TOKEN is set"
-          fi
-      
+          fi 
 
       # Check Maven Effective Settings
       - name: Check Maven Effective Settings
