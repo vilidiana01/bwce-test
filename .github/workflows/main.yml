@@ -3,7 +3,7 @@ name: Build BWCE EAR, Push Docker Image to Docker Hub and Deploy to Kubernetes
 env:
   CHART_PATH: https://github.com/maintilla/github-wf-test/releases/download/bwce/bwce-0.1.tar
   CHART_OVERRIDE_PATH: https://github.com/vilidiana01/bwce-test/blob/main/values.yaml
-  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 on:
   push:
@@ -46,12 +46,12 @@ jobs:
               <server>
                 <id>github</id>
                 <username>${{ github.actor }}</username>
-                <password>${{ secrets.GH_TOKEN }}</password>
+                <password>${{ secrets.GITHUB_TOKEN }}</password>
               </server>
               <server>
                 <id>project-dependencies</id>
                 <username>${{ github.actor }}</username>
-                <password>${{ secrets.GH_TOKEN }}</password>
+                <password>${{ secrets.GITHUB_TOKEN }}</password>
               </server>
             </servers>
           </settings>
@@ -66,9 +66,9 @@ jobs:
       - name: Perform Unit tests
         run: |
           POM_FILE_LOCATION=$(find . -path "*.parent/pom.xml")
-         # mvn clean test -f "$POM_FILE_LOCATION"
+          mvn clean test -f "$POM_FILE_LOCATION"
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
 
       # Code Quality Checks with SonarQube plugin using Maven
@@ -77,17 +77,17 @@ jobs:
       #    POM_FILE_LOCATION=$(find . -path "*.parent/pom.xml")
       #    mvn clean sonar:sonar -DskipTests -f "$POM_FILE_LOCATION"
       #  env:
-      #    GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       #    GITHUB_ACTOR: ${{ github.actor }}
 
       # Check token length
       - name: Debug GitHub Token
         run: |
-          if [ -z "${{ secrets.GH_TOKEN }}" ]; then
-            echo "GH_TOKEN is empty or not set"
+          if [ -z "${{ secrets.GITHUB_TOKEN }}" ]; then
+            echo "GITHUB_TOKEN is empty or not set"
             exit 1
           else
-            echo "GH_TOKEN is set"
+            echo "GITHUB_TOKEN is set"
           fi 
 
       # Check Maven Effective Settings
@@ -100,7 +100,7 @@ jobs:
           POM_FILE_LOCATION=$(find . -path "*.parent/pom.xml")
           mvn clean package deploy -DskipTests -X -e -f "$POM_FILE_LOCATION"
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ACTOR: vilidiana01
 
       # Verify that the EAR file is created before proceeding
