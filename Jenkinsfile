@@ -39,6 +39,7 @@ bash -euo pipefail -lc '
         }
 
         stage('Build & Deploy Maven') {
+          steps{
           withCredentials([usernamePassword(credentialsId: 'jenkins', usernameVariable: 'GPR_USER', passwordVariable: 'GPR_TOKEN')]) {
           sh '''
             set -euo pipefail
@@ -78,7 +79,9 @@ bash -euo pipefail -lc '
             mvn -B -V -s settings.xml -f *.parent/pom.xml clean package
           '''
         }
+      }
     }
+  }
 
     post {
         success {
