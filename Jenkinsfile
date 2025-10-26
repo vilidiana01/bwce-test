@@ -83,14 +83,14 @@ bash -euo pipefail -lc '
     }
     stage('Build docker image') {
         steps {
-            sh """
+            sh '''
                     set -e
                     echo "[INFO] Build docker image using Dockerfile"
                     find . -type f -name '*.ear' -exec mv -t "$(pwd)" {} +
                     docker build -t test-app:${BUILD_NUMBER} -f Dockerfile .
                     echo "[INFO] Controllo il risultato:"
                     docker images
-                """
+                '''
         }
     }
   }
