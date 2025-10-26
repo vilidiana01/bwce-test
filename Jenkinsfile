@@ -84,6 +84,7 @@ bash -euo pipefail -lc '
     }
     stage('Build docker image') {
         steps {
+          withDockerTool('docker') {
             sh '''
                     set -e
                     echo "[INFO] Build docker image using Dockerfile"
@@ -93,6 +94,7 @@ bash -euo pipefail -lc '
                     docker images
                 '''
         }
+      }
     }
   }
 
