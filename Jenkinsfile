@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent desktop-jenkins_agent-1
 
     options {
       timestamps()
