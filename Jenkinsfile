@@ -1,5 +1,5 @@
 pipeline {
-    agent desktop-jenkins_agent-1
+    agent docker-ssh-jenkins-agent
 
     options {
       timestamps()
