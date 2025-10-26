@@ -84,7 +84,9 @@ bash -euo pipefail -lc '
     }
     stage('Build docker image') {
         steps {
-          withDockerTool('docker') {
+          script {
+           def dockerHome = tool name: 'docker', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
+           withEnv(["PATH+DOCKER=${dockerHome}/bin"]) {
             sh '''
                     set -e
                     echo "[INFO] Build docker image using Dockerfile"
@@ -93,6 +95,7 @@ bash -euo pipefail -lc '
                     echo "[INFO] Controllo il risultato:"
                     docker images
                 '''
+          }
         }
       }
     }
