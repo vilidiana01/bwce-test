@@ -39,18 +39,44 @@ bash -euo pipefail -lc '
         }
 
         stage('Build & Deploy Maven') {
-            steps {
-    //            dir("${env.REPO_DIR}") {
-                sh """
-                    set -e
-                    POM_FILE_LOCATION=\$(find . -path "./*.parent/pom.xml")
-                    echo "=== Start mvn clean ==="
-                    mvn -V -B clean package -f \${POM_FILE_LOCATION}
-                    echo "=== Start mvn deploy ==="
-                    mvn -V -B deploy -f \${POM_FILE_LOCATION}
-                """
-      //          }
-            }
+          withCredentials([usernamePassword(credentialsId: 'jenkins', usernameVariable: 'GPR_USER', passwordVariable: 'GPR_TOKEN')]) {
+          sh '''
+            set -euo pipefail
+
+            cat > settings.xml <<'EOF'
+            <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+              <servers>
+                <server>
+                  <id>github</id>
+                  <username>${env.GPR_USER}</username>
+                  <password>${env.GPR_TOKEN}</password>
+                </server>
+              </servers>
+              <profiles>
+                <profile>
+                  <id>github</id>
+                  <repositories>
+                    <repository>
+                      <id>github</id>
+                      <url>https://maven.pkg.github.com/vilidiana01/project-dependencies</url>
+                    </repository>
+                  </repositories>
+                </profile>
+              </profiles>
+              <activeProfiles>
+                <activeProfile>github</activeProfile>
+              </activeProfiles>
+            </settings>
+            EOF
+
+            # facoltativo: stampa versione Maven per diagnosi
+            mvn -v
+
+            # NB: specifica il pom giusto
+            mvn -B -V -s settings.xml -f *.parent/pom.xml clean package
+          '''
         }
     }
 
