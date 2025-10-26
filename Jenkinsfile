@@ -8,15 +8,14 @@ pipeline {
     stages {
         stage('Patch pom.xml') {
             steps {
-sh '''
-  set -euo pipefail
-
+sh label: 'Patch pom.xml (solo cartella senza punto)', script: '''
+bash -euo pipefail -lc '
   echo "[INFO] Individuo il pom.xml nella cartella senza punto..."
   mapfile -t targets < <(find . -maxdepth 2 -type f -name pom.xml -path "./*/pom.xml" ! -path "./*.*/*")
 
   if [ "${#targets[@]}" -ne 1 ]; then
     echo "[ERRORE] Atteso 1 solo pom.xml in cartella senza punto, trovati: ${#targets[@]}"
-    printf '%s\n' "${targets[@]}"
+    printf "%s\\n" "${targets[@]}"
     exit 1
   fi
 
@@ -24,12 +23,15 @@ sh '''
   echo "[INFO] File target: ${target}"
 
   echo "[INFO] Modifico il project.type nel pom.xml"
-  sed -i 's|<project.type>Platform</project.type>|<project.type>None</project.type>|' "${target}"
+  sed -i '"'"'s|<project.type>Platform</project.type>|<project.type>None</project.type>|'"'"' "${target}"
 
   echo "[INFO] Controllo il risultato:"
   grep -n "<project.type>" "${target}"
+'
 '''
+
                 }
+
         }
 
         stage('Build & Deploy Maven') {
