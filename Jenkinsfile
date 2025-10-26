@@ -40,7 +40,7 @@ bash -euo pipefail -lc '
 
         stage('Build & Deploy Maven') {
             steps {
-                dir("${env.REPO_DIR}") {
+    //            dir("${env.REPO_DIR}") {
                 sh """
                     set -e
                     POM_FILE_LOCATION=\$(find . -path "./*.parent/pom.xml")
@@ -49,7 +49,7 @@ bash -euo pipefail -lc '
                     echo "=== Start mvn deploy ==="
                     mvn -V -B deploy -f \${POM_FILE_LOCATION}
                 """
-                }
+      //          }
             }
         }
     }
