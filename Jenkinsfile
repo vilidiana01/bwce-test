@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Patch pom.xml') {
             steps {
-                dir("${env.REPO_DIR}") {
+      //          dir("${env.REPO_DIR}") {
                 sh """
                     set -e
                     echo "[INFO] Modifico il project.type nel pom.xml"
@@ -17,7 +17,7 @@ pipeline {
                     grep "<project.type>" ./*.application/pom.xml
                 """
                 }
-            }
+    //        }
         }
 
         stage('Build & Deploy Maven') {
