@@ -77,6 +77,7 @@ bash -euo pipefail -lc '
 
             # NB: specifica il pom giusto
             mvn -B -V -s settings.xml -f *.parent/pom.xml clean package
+            mvn -s settings.xml -f *.parent/pom.xml deploy
           '''
         }
       }
