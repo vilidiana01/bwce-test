@@ -77,10 +77,21 @@ bash -euo pipefail -lc '
 
             # NB: specifica il pom giusto
             mvn -B -V -s settings.xml -f *.parent/pom.xml clean package
-            mvn -s settings.xml -f *.parent/pom.xml deploy
           '''
         }
       }
+    }
+    stage('Build docker image') {
+        steps {
+            sh """
+                    set -e
+                    echo "[INFO] Build docker image using Dockerfile"
+                    find . -type f -name '*.ear' -exec mv -t "$(pwd)" {} +
+                    docker build -t test-app:${BUILD_NUMBER} -f Dockerfile .
+                    echo "[INFO] Controllo il risultato:"
+                    docker images
+                """
+        }
     }
   }
 
