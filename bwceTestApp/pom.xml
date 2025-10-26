@@ -11,7 +11,7 @@
   <artifactId>bwceTestApp</artifactId>
   <packaging>bwear</packaging>
   <properties>
-    <project.type>None</project.type>
+    <project.type>Platform</project.type>
     <bw.Home>/bwce/2.9</bw.Home>
     <skipTests>false</skipTests>
     <failIfNoTests>false</failIfNoTests>

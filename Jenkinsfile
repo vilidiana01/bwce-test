@@ -8,16 +8,28 @@ pipeline {
     stages {
         stage('Patch pom.xml') {
             steps {
-      //          dir("${env.REPO_DIR}") {
-                sh """
-                    set -e
-                    echo "[INFO] Modifico il project.type nel pom.xml"
-                    sed -i 's|<project.type>Platform</project.type>|<project.type>None</project.type>|' ./*.application/pom.xml
-                    echo "[INFO] Controllo il risultato:"
-                    grep "<project.type>" ./*.application/pom.xml
-                """
+sh '''
+  set -euo pipefail
+
+  echo "[INFO] Individuo il pom.xml nella cartella senza punto..."
+  mapfile -t targets < <(find . -maxdepth 2 -type f -name pom.xml -path "./*/pom.xml" ! -path "./*.*/*")
+
+  if [ "${#targets[@]}" -ne 1 ]; then
+    echo "[ERRORE] Atteso 1 solo pom.xml in cartella senza punto, trovati: ${#targets[@]}"
+    printf '%s\n' "${targets[@]}"
+    exit 1
+  fi
+
+  target="${targets[0]}"
+  echo "[INFO] File target: ${target}"
+
+  echo "[INFO] Modifico il project.type nel pom.xml"
+  sed -i 's|<project.type>Platform</project.type>|<project.type>None</project.type>|' "${target}"
+
+  echo "[INFO] Controllo il risultato:"
+  grep -n "<project.type>" "${target}"
+'''
                 }
-    //        }
         }
 
         stage('Build & Deploy Maven') {
