@@ -1,6 +1,11 @@
 pipeline {
     agent { label 'docker-ssh-jenkins-agent' }
 
+    tools {
+      maven 'Maven-3.9'
+      jdk   'temurin-17'
+    }
+
     options {
       timestamps()
       disableConcurrentBuilds()
